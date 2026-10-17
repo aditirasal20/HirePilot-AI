@@ -1,0 +1,279 @@
+{
+  "companies": [
+    {
+      "key": "google",
+      "name": "Google",
+      "website": "https://about.google",
+      "source": "https://about.google/company-info/philosophy/",
+      "logo": "https://www.google.com/favicon.ico",
+      "location": "Bengaluru, India",
+      "industry": "Technology",
+      "about": "Google builds products that help people find information, communicate, and work, including Search, Maps, Workspace, and Google Cloud. Its mission is to make the world's information accessible and useful.",
+      "roles": [
+        [
+          "Software Engineer, Backend",
+          "Java,Python,SQL,Distributed Systems,REST APIs",
+          3,
+          2400000,
+          3800000,
+          "Build reliable backend services for information-intensive products.",
+          "Design versioned APIs and service boundaries;Investigate latency using traces and production metrics;Improve data models, caching and recovery behavior",
+          "Experience building tested services in Java or Python;Knowledge of database indexing and distributed-system tradeoffs;Clear technical documentation and collaborative code reviews"
+        ],
+        [
+          "Frontend Engineer, Web Experiences",
+          "TypeScript,React,HTML,CSS,Accessibility",
+          2,
+          1800000,
+          3000000,
+          "Build accessible web interfaces for complex workflows.",
+          "Implement reusable components with TypeScript;Profile rendering performance and improve keyboard navigation;Partner with design to turn research into usable interfaces",
+          "Production experience with a modern JavaScript framework;Strong semantic HTML, CSS and browser fundamentals;Experience with component tests and accessible forms"
+        ]
+      ]
+    },
+    {
+      "key": "razorpay",
+      "name": "Razorpay",
+      "website": "https://razorpay.com",
+      "source": "https://razorpay.com/about/",
+      "logo": "https://razorpay.com/favicon.ico",
+      "location": "Bengaluru, India",
+      "industry": "Financial Technology",
+      "about": "Razorpay provides payment and financial technology products for businesses. Its platform supports accepting and disbursing payments through developer-friendly APIs and integrations.",
+      "roles": [
+        [
+          "Backend Engineer, Payments",
+          "Go,PostgreSQL,Redis,REST APIs,Unit Testing",
+          3,
+          2000000,
+          3400000,
+          "Develop dependable payment processing and reconciliation services.",
+          "Build idempotent APIs and auditable state transitions;Improve reconciliation workflows and failure recovery;Write integration tests for refunds, retries and timeouts",
+          "Backend development in Go or a comparable language;Understanding of database transactions and concurrency;Ability to debug asynchronous systems and document tradeoffs"
+        ],
+        [
+          "Frontend Engineer, Merchant Dashboard",
+          "React,TypeScript,JavaScript,CSS,Testing Library",
+          2,
+          1500000,
+          2600000,
+          "Help merchants understand transactions and manage payment operations.",
+          "Build searchable tables and clear payment status views;Implement accessible forms with reliable validation;Test loading, empty and error states across screen sizes",
+          "Hands-on React and TypeScript experience;Working knowledge of HTTP APIs and client-side state;Experience testing user journeys and handling sensitive data carefully"
+        ]
+      ]
+    },
+    {
+      "key": "browserstack",
+      "name": "BrowserStack",
+      "website": "https://www.browserstack.com",
+      "source": "https://www.browserstack.com/company",
+      "logo": "https://www.browserstack.com/favicon.ico",
+      "location": "Mumbai, India",
+      "industry": "Developer Tools",
+      "about": "BrowserStack offers a cloud platform for testing websites and mobile applications across browsers and real devices. Its tools support functional, visual, and accessibility testing throughout software delivery.",
+      "roles": [
+        [
+          "Software Engineer in Test",
+          "Playwright,TypeScript,API Testing,CI/CD,SQL",
+          2,
+          1400000,
+          2400000,
+          "Improve confidence in web releases through reliable automation.",
+          "Create maintainable end-to-end tests for critical journeys;Investigate flaky failures and improve test isolation;Publish concise quality reports and reproducible bug reports",
+          "Practical experience with browser automation;Understanding of API testing and CI pipelines;Ability to assess risk and choose useful test coverage"
+        ],
+        [
+          "Platform Engineer, Test Infrastructure",
+          "Linux,Docker,Kubernetes,Python,Observability",
+          3,
+          2200000,
+          3600000,
+          "Build infrastructure that runs browser and device testing workloads.",
+          "Improve worker scheduling and environment isolation;Instrument resource utilization and service health;Automate provisioning and document incident recovery",
+          "Experience operating Linux services and containers;Familiarity with Kubernetes networking and resource limits;Strong scripting and systematic debugging skills"
+        ]
+      ]
+    },
+    {
+      "key": "atlassian",
+      "name": "Atlassian",
+      "website": "https://www.atlassian.com",
+      "source": "https://www.atlassian.com/company",
+      "logo": "https://www.atlassian.com/favicon.ico",
+      "location": "Bengaluru, India",
+      "industry": "Collaboration Software",
+      "about": "Atlassian develops software that helps teams plan, collaborate, and manage work. Products such as Jira and Confluence support project tracking and shared knowledge across organizations.",
+      "roles": [
+        [
+          "Product Designer, Collaboration",
+          "Figma,User Research,Interaction Design,Prototyping,Accessibility",
+          3,
+          1800000,
+          3000000,
+          "Make complex collaboration workflows easier to understand and use.",
+          "Map user journeys and identify confusing handoffs;Prototype alternatives and conduct usability sessions;Document interaction behavior and partner with engineering",
+          "Portfolio showing problem definition and iteration;Experience designing data-rich SaaS workflows;Ability to explain decisions using research and accessibility principles"
+        ],
+        [
+          "Full Stack Engineer, Work Management",
+          "React,TypeScript,Java,PostgreSQL,REST APIs",
+          3,
+          2400000,
+          4000000,
+          "Develop end-to-end features for shared work and project tracking.",
+          "Build workflow interfaces and supporting APIs;Maintain permissions and consistent application state;Review performance, observability and automated test coverage",
+          "Experience shipping both frontend and backend features;Sound knowledge of relational data and authorization;Comfort collaborating through technical design and code reviews"
+        ]
+      ]
+    },
+    {
+      "key": "freshworks",
+      "name": "Freshworks",
+      "website": "https://www.freshworks.com",
+      "source": "https://www.freshworks.com/company/about/",
+      "logo": "https://www.freshworks.com/favicon.ico",
+      "location": "Chennai, India",
+      "industry": "Business Software",
+      "about": "Freshworks builds customer and employee service software, including Freshdesk and Freshservice. Its products help organizations manage support and service workflows, with AI-assisted capabilities.",
+      "roles": [
+        [
+          "Backend Engineer, Customer Support",
+          "Java,Spring Boot,MySQL,Redis,REST APIs",
+          2,
+          1500000,
+          2600000,
+          "Build support workflows that help service teams resolve requests.",
+          "Implement reliable ticket assignment and search APIs;Improve database queries and background processing;Add tests for permissions, failures and edge cases",
+          "Experience building web services in Java;Understanding of relational databases and API design;Ability to diagnose issues with logs and metrics"
+        ],
+        [
+          "Frontend Engineer, Service Experience",
+          "React,TypeScript,HTML,CSS,Accessibility",
+          2,
+          1400000,
+          2400000,
+          "Design responsive service interfaces that help agents work efficiently.",
+          "Build accessible ticket views and reusable UI components;Improve form feedback and navigation consistency;Measure frontend performance and test critical interactions",
+          "Production experience with React and TypeScript;Strong browser, accessibility and CSS fundamentals;Ability to work with designers and backend engineers"
+        ]
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "key": "aarav",
+      "name": "Aarav Mehta",
+      "location": "Bengaluru, India",
+      "position": "Frontend Engineer",
+      "years": 3,
+      "skills": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "HTML",
+        "CSS",
+        "Accessibility",
+        "Testing Library"
+      ],
+      "bio": "Frontend engineer focused on accessible dashboards, reusable components and reliable forms.",
+      "experience": "Frontend Engineer | Northstar Studio (fictional) | Jul 2023 - Present",
+      "bullets": [
+        "Built responsive dashboards with React and TypeScript, including filtering, pagination and saved preferences.",
+        "Created accessible form components with keyboard navigation and clear validation feedback.",
+        "Added component and integration tests for navigation, authentication and data-fetching states."
+      ]
+    },
+    {
+      "key": "isha",
+      "name": "Isha Rao",
+      "location": "Hyderabad, India",
+      "position": "Backend Engineer",
+      "years": 4,
+      "skills": [
+        "Java",
+        "Spring Boot",
+        "Go",
+        "PostgreSQL",
+        "MySQL",
+        "Redis",
+        "REST APIs"
+      ],
+      "bio": "Backend engineer interested in dependable APIs, transactional systems and database performance.",
+      "experience": "Backend Engineer | Meridian Systems (fictional) | Jul 2022 - Present",
+      "bullets": [
+        "Developed versioned REST APIs with Java and Spring Boot for operational workflows.",
+        "Designed transactional data models, idempotent handlers and background processing retries.",
+        "Investigated slow queries with execution plans and added integration tests for failure recovery."
+      ]
+    },
+    {
+      "key": "kabir",
+      "name": "Kabir Shah",
+      "location": "Pune, India",
+      "position": "Quality Engineer",
+      "years": 2,
+      "skills": [
+        "Playwright",
+        "TypeScript",
+        "API Testing",
+        "CI/CD",
+        "SQL",
+        "Python"
+      ],
+      "bio": "Quality engineer building maintainable test automation and reproducible quality checks.",
+      "experience": "Quality Engineer | Cedar Labs (fictional) | Jul 2024 - Present",
+      "bullets": [
+        "Built Playwright coverage for account, checkout and dashboard workflows.",
+        "Added API contract checks and isolated test fixtures to a continuous integration pipeline.",
+        "Investigated flaky tests and documented defects with reproducible steps and relevant logs."
+      ]
+    },
+    {
+      "key": "meera",
+      "name": "Meera Nair",
+      "location": "Bengaluru, India",
+      "position": "Product Designer",
+      "years": 3,
+      "skills": [
+        "Figma",
+        "User Research",
+        "Interaction Design",
+        "Prototyping",
+        "Accessibility"
+      ],
+      "bio": "Product designer focused on research-led improvements to complex business software.",
+      "experience": "Product Designer | Fieldwork Digital (fictional) | Jul 2023 - Present",
+      "bullets": [
+        "Mapped support-agent journeys and prototyped improvements to ticket routing and navigation.",
+        "Facilitated usability sessions and translated findings into prioritized design changes.",
+        "Documented responsive behavior, accessible contrast and component interaction states."
+      ]
+    },
+    {
+      "key": "rohan",
+      "name": "Rohan Desai",
+      "location": "Chennai, India",
+      "position": "Full Stack Engineer",
+      "years": 4,
+      "skills": [
+        "React",
+        "TypeScript",
+        "Java",
+        "Python",
+        "PostgreSQL",
+        "Docker",
+        "Linux",
+        "REST APIs"
+      ],
+      "bio": "Full stack engineer delivering maintainable web products from database design to interface testing.",
+      "experience": "Software Engineer | Oakline Software (fictional) | Jul 2022 - Present",
+      "bullets": [
+        "Delivered React interfaces and Java APIs for project tracking and reporting.",
+        "Implemented role-based permissions and relational data models with PostgreSQL.",
+        "Containerized development services and improved deployment checks and application logging."
+      ]
+    }
+  ]
+}

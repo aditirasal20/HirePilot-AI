@@ -1,0 +1,40 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test tests/auth.test.js tests/candidate-view.test.js tests/candidate-services.test.js tests/recruiter-workflows.test.js tests/job-matching.test.js",
+    "dev": "nodemon",
+    "start": "node src/index.js",
+    "seed": "node prisma/seed.js",
+    "test:auth:live": "node --test tests/auth.live.test.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.16.2",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "nodemailer": "^10.0.10",
+    "pdf-parse": "^1.1.1",
+    "prisma": "^6.16.2",
+    "socket.io": "^4.8.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "nodemon": "^3.1.14"
+  }
+}

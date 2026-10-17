@@ -1,0 +1,1157 @@
+{
+  "info": {
+    "name": "HirePilot AI - Server API",
+    "description": "Production-readiness test collection for the HirePilot AI backend. Base URL: http://localhost:5001/api/v1. Login sets `candidateToken` / `recruiterToken` collection variables automatically. Protected endpoints use the `Authorization: Bearer {{token}}` header.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5001/api/v1" },
+    { "key": "candidateToken", "value": "" },
+    { "key": "recruiterToken", "value": "" },
+    { "key": "candidateId", "value": "" },
+    { "key": "companyId", "value": "" },
+    { "key": "jobId", "value": "" },
+    { "key": "resumeId", "value": "" },
+    { "key": "applicationId", "value": "" },
+    { "key": "interviewId", "value": "" },
+    { "key": "matchId", "value": "" },
+    { "key": "notificationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('health returns 200 + success true', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /auth/register (candidate)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Candidate\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"CANDIDATE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('register candidate returns 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('saves candidate id', function () {",
+                  "  pm.collectionVariables.set('candidateId', pm.response.json().data.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/register (recruiter)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Sarah Recruiter\",\n  \"email\": \"recruiter@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"RECRUITER\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('register recruiter returns 201', function () { pm.response.to.have.status(201); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/register (duplicate email -> 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Candidate\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"CANDIDATE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('duplicate email -> 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('message mentions email', function () {",
+                  "  pm.expect(pm.response.json().message.toLowerCase()).to.include('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/login (candidate)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('login candidate returns 200 + token', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.accessToken).to.be.a('string');",
+                  "});",
+                  "pm.test('sets candidateToken', function () {",
+                  "  pm.collectionVariables.set('candidateToken', pm.response.json().data.accessToken);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/login (recruiter)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"recruiter@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('login recruiter returns 200 + token', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().data.accessToken).to.be.a('string');",
+                  "});",
+                  "pm.test('sets recruiterToken', function () {",
+                  "  pm.collectionVariables.set('recruiterToken', pm.response.json().data.accessToken);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /auth/login (wrong password -> 401)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"WrongPassword!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('wrong password -> 401', function () { pm.response.to.have.status(401); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('me returns 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/recruiter-only (candidate -> 403)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/recruiter-only", "host": ["{{baseUrl}}"], "path": ["auth", "recruiter-only"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('candidate forbidden from recruiter route -> 403', function () { pm.response.to.have.status(403); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Companies",
+      "item": [
+        {
+          "name": "POST /companies",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Corp\",\n  \"description\": \"Leading software company\",\n  \"website\": \"https://acme.example.com\",\n  \"industry\": \"Software\",\n  \"companySize\": 250,\n  \"location\": \"San Francisco, CA\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/companies", "host": ["{{baseUrl}}"], "path": ["companies"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('create company -> 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('saves companyId', function () {",
+                  "  pm.collectionVariables.set('companyId', pm.response.json().data.company.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /companies/me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/companies/me", "host": ["{{baseUrl}}"], "path": ["companies", "me"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('get my company -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /companies/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"companySize\": 320,\n  \"location\": \"Austin, TX\"\n}" },
+            "url": { "raw": "{{baseUrl}}/companies/{{companyId}}", "host": ["{{baseUrl}}"], "path": ["companies", "{{companyId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update company -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "POST /jobs",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Full Stack Engineer\",\n  \"description\": \"We are looking for a senior engineer with deep experience building scalable web applications with Node.js, React, PostgreSQL and AWS.\",\n  \"location\": \"Remote\",\n  \"salaryMin\": 120000,\n  \"salaryMax\": 160000,\n  \"yearsOfExperience\": 5,\n  \"employmentType\": \"FULL_TIME\",\n  \"requiredSkills\": [\"Node.js\", \"React\", \"PostgreSQL\", \"AWS\", \"Docker\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/jobs", "host": ["{{baseUrl}}"], "path": ["jobs"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('create job -> 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('saves jobId', function () {",
+                  "  pm.collectionVariables.set('jobId', pm.response.json().data.job.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /jobs (invalid salary range -> 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Bad Salary Job\",\n  \"description\": \"This job description must be long enough to pass validation checks.\",\n  \"location\": \"Remote\",\n  \"salaryMin\": 200000,\n  \"salaryMax\": 100000,\n  \"yearsOfExperience\": 2,\n  \"employmentType\": \"FULL_TIME\",\n  \"requiredSkills\": [\"Node.js\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/jobs", "host": ["{{baseUrl}}"], "path": ["jobs"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('salaryMin > salaryMax -> 400', function () { pm.response.to.have.status(400); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /jobs (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs?search=engineer&sort=latest",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"],
+              "query": [
+                { "key": "search", "value": "engineer" },
+                { "key": "sort", "value": "latest" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('public jobs -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /jobs/me (recruiter)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/jobs/me", "host": ["{{baseUrl}}"], "path": ["jobs", "me"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('my jobs -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /jobs/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["jobs", "{{jobId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('job by id -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /jobs/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salaryMax\": 180000,\n  \"requiredSkills\": [\"Node.js\", \"React\", \"PostgreSQL\", \"AWS\", \"Docker\", \"Kubernetes\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["jobs", "{{jobId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update job -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /jobs/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"CLOSED\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update job status -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resumes",
+      "item": [
+        {
+          "name": "POST /resumes (multipart upload)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "My Resume", "type": "text" },
+                { "key": "file", "type": "file", "src": "/path/to/resume.pdf" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/resumes", "host": ["{{baseUrl}}"], "path": ["resumes"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('upload resume -> 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('saves resumeId', function () {",
+                  "  pm.collectionVariables.set('resumeId', pm.response.json().data.resume.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /resumes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/resumes", "host": ["{{baseUrl}}"], "path": ["resumes"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('list resumes -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /resumes/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/resumes/{{resumeId}}", "host": ["{{baseUrl}}"], "path": ["resumes", "{{resumeId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('resume by id -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /resumes/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Resume Title\"\n}" },
+            "url": { "raw": "{{baseUrl}}/resumes/{{resumeId}}", "host": ["{{baseUrl}}"], "path": ["resumes", "{{resumeId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update resume -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /resumes/:id/default",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/resumes/{{resumeId}}/default",
+              "host": ["{{baseUrl}}"],
+              "path": ["resumes", "{{resumeId}}", "default"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('set default resume -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resume AI",
+      "item": [
+        {
+          "name": "POST /resume-ai/:resumeId/analyze",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{baseUrl}}/resume-ai/{{resumeId}}/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["resume-ai", "{{resumeId}}", "analyze"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('analyze queued -> 202', function () { pm.response.to.have.status(202); });",
+                  "pm.test('analysisStatus becomes COMPLETED after poll', function () {",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /resume-ai/:resumeId/analysis (poll until COMPLETED)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/resume-ai/{{resumeId}}/analysis",
+              "host": ["{{baseUrl}}"],
+              "path": ["resume-ai", "{{resumeId}}", "analysis"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('analysis endpoint -> 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('completed analysis has score fields', function () {",
+                  "  var data = pm.response.json().data;",
+                  "  if (data.analysisStatus === 'COMPLETED') {",
+                  "    pm.expect(data).to.have.property('atsCompatibility');",
+                  "    pm.expect(data).to.have.property('analysisScore');",
+                  "  }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "POST /applications",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"resumeId\": \"{{resumeId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/applications", "host": ["{{baseUrl}}"], "path": ["applications"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('create application -> 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('saves applicationId', function () {",
+                  "  pm.collectionVariables.set('applicationId', pm.response.json().data.application.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /applications/me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/applications/me", "host": ["{{baseUrl}}"], "path": ["applications", "me"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('my applications -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /applications/job/:jobId (recruiter)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/applications/job/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "job", "{{jobId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('job applications -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /applications/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/applications/{{applicationId}}", "host": ["{{baseUrl}}"], "path": ["applications", "{{applicationId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('application by id -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /applications/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"SHORTLISTED\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/applications/{{applicationId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "{{applicationId}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update application status -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Job Matching",
+      "item": [
+        {
+          "name": "POST /job-matching/:jobId/analyze",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resumeId\": \"{{resumeId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/job-matching/{{jobId}}/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["job-matching", "{{jobId}}", "analyze"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('match analyze queued -> 202', function () { pm.response.to.have.status(202); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /job-matching/:jobId/report?resumeId=",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/job-matching/{{jobId}}/report?resumeId={{resumeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["job-matching", "{{jobId}}", "report"],
+              "query": [{ "key": "resumeId", "value": "{{resumeId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('match report -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /job-matching (my matches)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/job-matching", "host": ["{{baseUrl}}"], "path": ["job-matching"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('my matches -> 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('captures a matchId if present', function () {",
+                  "  var data = pm.response.json().data;",
+                  "  var match = Array.isArray(data) ? data[0] : (data.matches || data.matchs || [])[0];",
+                  "  if (match) pm.collectionVariables.set('matchId', match.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /job-matching/:matchId",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/job-matching/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["job-matching", "{{matchId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('delete match -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Interviews",
+      "item": [
+        {
+          "name": "POST /interviews",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"interviewType\": \"ONLINE\",\n  \"scheduledAt\": \"2026-09-01T10:00:00.000Z\",\n  \"durationMinutes\": 45,\n  \"timezone\": \"Asia/Kolkata\",\n  \"meetingLink\": \"https://meet.example.com/interview\",\n  \"notes\": \"Technical round\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/interviews", "host": ["{{baseUrl}}"], "path": ["interviews"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('schedule interview -> 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('saves interviewId', function () {",
+                  "  pm.collectionVariables.set('interviewId', pm.response.json().data.interview.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /interviews (past date -> 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"scheduledAt\": \"2020-01-01T10:00:00.000Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/interviews", "host": ["{{baseUrl}}"], "path": ["interviews"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('past interview date -> 400', function () { pm.response.to.have.status(400); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /interviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/interviews", "host": ["{{baseUrl}}"], "path": ["interviews"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('list interviews -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /interviews/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/interviews/{{interviewId}}", "host": ["{{baseUrl}}"], "path": ["interviews", "{{interviewId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('interview by id -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /interviews/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduledAt\": \"2026-09-02T11:00:00.000Z\",\n  \"notes\": \"Rescheduled to 11am\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/interviews/{{interviewId}}", "host": ["{{baseUrl}}"], "path": ["interviews", "{{interviewId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update interview -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /interviews/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{recruiterToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"COMPLETED\",\n  \"score\": 85,\n  \"feedback\": \"Strong technical skills\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/interviews/{{interviewId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["interviews", "{{interviewId}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('update interview status -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /interviews/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/interviews/{{interviewId}}", "host": ["{{baseUrl}}"], "path": ["interviews", "{{interviewId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('delete interview -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "GET /dashboard/candidate",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/candidate", "host": ["{{baseUrl}}"], "path": ["dashboard", "candidate"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('candidate dashboard -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /dashboard/recruiter",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{recruiterToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/recruiter", "host": ["{{baseUrl}}"], "path": ["dashboard", "recruiter"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('recruiter dashboard -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "GET /notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/notifications?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["notifications"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('list notifications -> 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('captures notificationId', function () {",
+                  "  var data = pm.response.json().data;",
+                  "  var notif = Array.isArray(data) ? data[0] : (data.notifications || [])[0];",
+                  "  if (notif) pm.collectionVariables.set('notificationId', notif.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /notifications/unread-count",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/notifications/unread-count", "host": ["{{baseUrl}}"], "path": ["notifications", "unread-count"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('unread count -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /notifications/read-all",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/notifications/read-all", "host": ["{{baseUrl}}"], "path": ["notifications", "read-all"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('mark all read -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /notifications/:id/read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/notifications/{{notificationId}}/read", "host": ["{{baseUrl}}"], "path": ["notifications", "{{notificationId}}", "read"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('mark one read -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /notifications/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/notifications/{{notificationId}}", "host": ["{{baseUrl}}"], "path": ["notifications", "{{notificationId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('delete notification -> 200', function () { pm.response.to.have.status(200); });"],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

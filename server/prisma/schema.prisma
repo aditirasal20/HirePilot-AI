@@ -1,0 +1,414 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CANDIDATE
+  RECRUITER
+  ADMIN
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  CONTRACT
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  REVIEWING
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  REJECTED
+  HIRED
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum AnalysisStatus {
+  IDLE
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum MatchRecommendation {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model User {
+  id       String   @id @default(cuid())
+  fullName String
+  email    String   @unique
+  password String
+  avatar   String?
+  role     UserRole @default(CANDIDATE)
+
+  isEmailVerified Boolean @default(false)
+
+  refreshTokenHash      String?
+  refreshTokenExpiresAt DateTime?
+
+  candidateProfile CandidateProfile?
+  recruiterProfile RecruiterProfile?
+  notifications    Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CandidateProfile {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  phone    String?
+  bio      String?
+  location String?
+
+  yearsOfExperience Int?
+
+  currentPosition String?
+  expectedSalary  Int?
+
+  linkedinUrl  String?
+  githubUrl    String?
+  portfolioUrl String?
+
+  resumes      Resume[]
+  applications Application[]
+  jobMatches   JobMatch[]
+  coverLetters CoverLetter[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RecruiterProfile {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  designation String?
+
+  isVerified Boolean @default(false)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  jobs Job[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id String @id @default(cuid())
+
+  name        String  @unique
+  logo        String?
+  website     String?
+  description String?
+  industry    String?
+  companySize Int?
+  location    String?
+
+  isVerified Boolean @default(false)
+
+  recruiters RecruiterProfile[]
+  jobs       Job[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id String @id @default(cuid())
+
+  title       String
+  description String
+  location    String?
+
+  salaryMin Int?
+  salaryMax Int?
+
+  yearsOfExperience Int?
+
+  employmentType EmploymentType
+
+  requiredSkills String[]
+
+  status JobStatus @default(DRAFT)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  recruiterId String
+  recruiter   RecruiterProfile @relation(fields: [recruiterId], references: [id])
+
+  applications Application[]
+  jobMatches   JobMatch[]
+  coverLetters CoverLetter[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([recruiterId])
+  @@index([status])
+  @@index([employmentType])
+  @@index([location])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([status, employmentType, createdAt])
+  @@index([recruiterId, createdAt])
+}
+
+model Resume {
+  id String @id @default(cuid())
+
+  candidateProfileId String
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  title String
+
+  fileUrl  String
+  publicId String
+
+  originalFileName String
+
+  aiScore Float?
+
+  extractedSkills String[]
+
+  isDefault Boolean @default(false)
+
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  analysisStatus      AnalysisStatus @default(IDLE)
+  analysisStartedAt   DateTime?
+  analysisCompletedAt DateTime?
+  summary             String?        @db.Text
+  strengths           String[]
+  weaknesses          String[]
+  missingSkills       String[]
+  recommendedSkills   String[]
+  experienceLevel     String?
+  atsCompatibility    Float?
+  grammarScore        Float?
+  formatScore         Float?
+  keywordScore        Float?
+  jobReadinessScore   Float?
+  careerLevel         String?
+  industryFit         String?
+  parsedText          String?        @db.Text
+  lastAnalyzedAt      DateTime?
+  analysisVersion     String?        @default("1.0.0")
+  jobMatches          JobMatch[]
+  coverLetters        CoverLetter[]
+
+  @@index([candidateProfileId])
+  @@index([analysisStatus])
+}
+
+model JobMatch {
+  id String @id @default(cuid())
+
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  analysisStatus AnalysisStatus @default(QUEUED)
+
+  overallScore Float?
+
+  matchedSkills String[]
+  missingSkills String[]
+
+  strengths  String[]
+  weaknesses String[]
+
+  summary String? @db.Text
+
+  recommendation MatchRecommendation?
+
+  analysisStartedAt   DateTime?
+  analysisCompletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([resumeId, jobId])
+  @@index([candidateId])
+  @@index([jobId])
+  @@index([resumeId])
+  @@index([analysisStatus])
+  @@index([overallScore])
+  @@index([createdAt])
+}
+
+model Application {
+  id String @id @default(cuid())
+
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id])
+
+  status ApplicationStatus @default(APPLIED)
+
+  interview Interview?
+
+  appliedAt DateTime @default(now())
+
+  recruiterNotes String? @db.Text
+
+  @@unique([candidateId, jobId])
+  @@index([candidateId])
+  @@index([jobId])
+  @@index([resumeId])
+  @@index([status])
+  @@index([appliedAt])
+  @@index([jobId, status])
+  @@index([candidateId, appliedAt])
+  @@index([jobId, appliedAt])
+}
+
+enum InterviewType {
+  ONLINE
+  ONSITE
+  PHONE
+}
+
+model Interview {
+  id String @id @default(cuid())
+
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  interviewType InterviewType @default(ONLINE)
+
+  scheduledAt DateTime
+
+  durationMinutes Int @default(30)
+
+  timezone String @default("Asia/Kolkata")
+
+  meetingLink String?
+
+  notes String?
+
+  status InterviewStatus @default(SCHEDULED)
+
+  cancelReason String?
+
+  completedAt DateTime?
+
+  cancelledAt DateTime?
+
+  feedback String?
+
+  score Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([status, scheduledAt])
+}
+
+enum NotificationType {
+  APPLICATION
+  INTERVIEW
+  JOB
+  RESUME
+  AI
+  SYSTEM
+}
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title   String
+  message String
+  type    NotificationType
+
+  entityId   String?
+  entityType String?
+
+  isRead Boolean @default(false)
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+}
+
+model CoverLetter {
+  id String @id @default(cuid())
+
+  candidateId String
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id])
+
+  resumeId String
+  resume Resume @relation(fields: [resumeId], references: [id])
+
+  jobId String
+  job Job @relation(fields: [jobId], references: [id])
+
+  content String @db.Text
+
+  status AnalysisStatus @default(QUEUED)
+
+  generatedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([resumeId, jobId])
+  @@index([candidateId])
+  @@index([status])
+}

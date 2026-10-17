@@ -1,0 +1,17 @@
+node_modules
+
+.env
+
+dist
+
+coverage
+
+logs
+
+*.log
+
+.DS_Store
+/src/generated/prisma
+
+.demo-tools/
+.demo-output/
